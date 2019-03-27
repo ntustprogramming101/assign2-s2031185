@@ -59,8 +59,6 @@ void setup() {
 }
 
 void draw() {  
-time++;
-if(time>15){time=1;}
   switch(gameState){
     case GAME_START:
       image(title,0,0);
@@ -99,6 +97,8 @@ if(time>15){time=1;}
   
 //Groundhog move
       if(downPressed){
+        time++;
+        if(time>15){time=1;}
         if(time==15){
           keyPressed = false;
         }
