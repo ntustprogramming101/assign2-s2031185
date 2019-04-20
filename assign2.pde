@@ -1,18 +1,16 @@
-PImage bg, soil, life, groundhogIdle, soldier, robot, cabbage;
+PImage bg, soil, life, soldier, cabbage;
 PImage title, startNormal, startHovered, restartHovered, restartNormal, gameover;
-PImage groundhogDown, groundhogLeft, groundhogRight;
+PImage groundhogIdle, groundhogDown, groundhogLeft, groundhogRight;
 
 final int GAME_START = 0;
 final int GAME_RUN = 1;
 final int GAME_LOSE = 2;
 int gameState;
 
-int time=0;
-
-int lifeX;
-int lifeV=2;
+final int lifeX = 10;
 final int lifeY = 10;
 final int lifeWidth = 50;
+int lifeV=2;
 
 float soldierX, soldierY;
 float groundhogX, groundhogY;
@@ -22,6 +20,7 @@ boolean downPressed = false;
 boolean leftPressed = false;
 boolean rightPressed = false;
 
+float dstX,dstY;
 
 void setup() {
   size(640, 480, P2D);
@@ -55,6 +54,10 @@ void setup() {
   groundhogX = width/2;
   groundhogY = 80;
   
+  //goal?
+  dstX=width/2;
+  dstY=80;
+  
   gameState = GAME_START;
 }
 
@@ -76,11 +79,10 @@ void draw() {
       // Put in background, soil, life
       image(bg, 0, 0);
       image(soil, 0, 160);
-      for(int i=0;i<lifeV;i++){
-        image(life, lifeX+(lifeWidth+20)*i, lifeY);
+      for(int lifePlus=0 ; lifePlus<lifeV ; lifePlus++){
+        image(life , lifeX+(lifeWidth+20)*lifePlus , lifeY);
       }
-      //image(life, lifeX+lifeWidth+20, 10);
-       // Grass
+      // Grass
       noStroke();
       colorMode(RGB);
       fill(124, 204, 25);
@@ -95,27 +97,39 @@ void draw() {
       //Cabbage
       image(cabbage, cabbageX, cabbageY);
   
-//Groundhog move
-      if(downPressed){
-        time++;
-        if(time>15){time=1;}
-        if(time==15){
-          keyPressed = false;
-        }
-        groundhogY += 80/15;
-        image(groundhogDown, groundhogX, groundhogY);
+
+      //Boundary Lock
+      if(dstX + 80 > width){
+        dstX = width-80;
       }
-      if(leftPressed){
-        groundhogX -= 80/15;
-        image(groundhogLeft, groundhogX, groundhogY);
+      if(dstX < 0){
+        dstX = 0;
       }
-      if(rightPressed){
-        groundhogX += 80/15;
-        image(groundhogRight, groundhogX, groundhogY);
+      if(dstY > height-80){
+        dstY = height-80;
       }
-      // Put in Groundhog
-      image(groundhogIdle, groundhogX, groundhogY);
       
+       if(dstY>groundhogY)
+       {
+         groundhogY+=80/15;    
+         image(groundhogDown, groundhogX, groundhogY);
+       }
+       else  if(dstX>groundhogX)
+       {
+         groundhogX+=80/15;
+         image(groundhogRight, groundhogX, groundhogY);  
+       }
+       else if(dstX<groundhogX)
+       {        
+         groundhogX-=80/15;
+         image(groundhogLeft, groundhogX, groundhogY);          
+     }
+       else
+       {
+         image(groundhogIdle, groundhogX, groundhogY);     
+       }
+
+
       //Boundary Lock
       if(groundhogX + 80 > width){
         groundhogX = width-80;
@@ -129,20 +143,15 @@ void draw() {
   
       //Eat cabbage
       if(groundhogX == cabbageX && groundhogY == cabbageY){
-        cabbageX = floor(random(0,8))*80;
-        cabbageY = floor(random(2,6))*80;
+        cabbageX = -100;
+        cabbageY = -100;
         lifeV++;
       }
-/*
-  if((((soldierX-groundhogX)>1 || (groundhogX-soldierX)>1) &&
-    ((soldierY-groundhogY)>1 || (groundhogY-soldierY)>1))!=true){
-    groundhogX = width/2;
-    groundhogY = 80;
-    lifeV--;
-  }
- */ 
+
      //Crash with soldier
       if((soldierX-groundhogX)==0 && (groundhogY-soldierY)==0){
+        dstX=width/2;
+        dstY=80;
         groundhogX = width/2;
         groundhogY = 80;
         lifeV--;
@@ -159,7 +168,7 @@ void draw() {
       noFill();
       break;
       
-      case GAME_LOSE:
+      case GAME_LOSE:   
         image(gameover,0,0);
         image(restartNormal,248 , 360);
         //click
@@ -174,46 +183,17 @@ void draw() {
   }
 }
 
-	// Switch Game State
-		// Game Start
-
-		// Game Run
-
-		// Game Lose
-
 void keyPressed(){
-  if (key == CODED) { // detect special keys 
+  if (key == CODED && dstY==groundhogY && dstX==groundhogX) { // detect special keys 
     switch (keyCode) {
-      case DOWN:
-        //groundhogY += 80;
-        downPressed = true;
-        image(groundhogDown,groundhogX,groundhogY);
+      case DOWN:        
+          dstY+=80;
         break;
       case LEFT:
-        //groundhogX -= 80;
-        leftPressed = true;
-        image(groundhogLeft,groundhogX,groundhogY);
+          dstX-=80;
         break;
       case RIGHT:
-        //groundhogX += 80;
-        rightPressed = true;
-        image(groundhogRight,groundhogX,groundhogY);
-        break;
-    }
-  }
-}
-
-void keyReleased(){
-  if (key == CODED) {
-    switch (keyCode) {
-      case DOWN:
-        downPressed = false;
-        break;
-      case LEFT:
-        leftPressed = false;
-        break;
-      case RIGHT:
-        rightPressed = false;
+          dstX+=80;
         break;
     }
   }
