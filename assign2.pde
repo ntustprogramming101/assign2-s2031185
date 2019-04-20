@@ -16,10 +16,6 @@ float soldierX, soldierY;
 float groundhogX, groundhogY;
 float cabbageX, cabbageY;
 
-boolean downPressed = false;
-boolean leftPressed = false;
-boolean rightPressed = false;
-
 float dstX,dstY;
 
 void setup() {
@@ -54,7 +50,7 @@ void setup() {
   groundhogX = width/2;
   groundhogY = 80;
   
-  //goal?
+  //goal
   dstX=width/2;
   dstY=80;
   
@@ -75,6 +71,7 @@ void draw() {
         } 
       }
        break;
+       
     case GAME_RUN:
       // Put in background, soil, life
       image(bg, 0, 0);
@@ -147,15 +144,20 @@ void draw() {
         cabbageY = -100;
         lifeV++;
       }
-
      //Crash with soldier
-      if((soldierX-groundhogX)==0 && (groundhogY-soldierY)==0){
-        dstX=width/2;
-        dstY=80;
-        groundhogX = width/2;
-        groundhogY = 80;
-        lifeV--;
-      }
+     if((soldierX-groundhogX<160 && soldierX-groundhogX>80
+     || soldierX-groundhogX<80 && soldierX-groundhogX>0)
+     && soldierY-groundhogY<80 && soldierY-groundhogY>0
+     || soldierY-groundhogY<0 && soldierY-groundhogY<-80
+     || soldierX-groundhogX==0 && soldierY-groundhogY==0
+     || soldierX-groundhogX==160 && soldierY-groundhogY==0){
+       dstX = width/2;
+       dstY = 80;
+       groundhogX = width/2;
+       groundhogY = 80;
+       lifeV--;
+     }
+
       if(lifeV==0){
         gameState = GAME_LOSE;
         break;
@@ -177,6 +179,12 @@ void draw() {
           if(mousePressed){
             gameState = GAME_RUN;
             lifeV=2;
+            //Random Place Cabbage
+            cabbageX = floor(random(0,8))*80;
+            cabbageY = floor(random(2,6))*80;
+            // Random Place Soldier
+            soldierX = 0;
+            soldierY = floor(random(2, 6))*80;
             break;
           }
         }      
