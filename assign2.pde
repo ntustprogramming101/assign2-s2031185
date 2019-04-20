@@ -111,17 +111,17 @@ void draw() {
       
        if(dstY>groundhogY)
        {
-         groundhogY+=80/15;    
+         groundhogY+=80/16;    
          image(groundhogDown, groundhogX, groundhogY);
        }
        else  if(dstX>groundhogX)
        {
-         groundhogX+=80/15;
+         groundhogX+=80/16;
          image(groundhogRight, groundhogX, groundhogY);  
        }
        else if(dstX<groundhogX)
        {        
-         groundhogX-=80/15;
+         groundhogX-=80/16;
          image(groundhogLeft, groundhogX, groundhogY);          
      }
        else
